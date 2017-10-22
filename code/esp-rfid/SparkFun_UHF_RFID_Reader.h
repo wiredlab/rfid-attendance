@@ -56,8 +56,8 @@
 #define RESPONSE_IS_TAGFOUND            8
 #define RESPONSE_IS_NOTAGFOUND          9
 #define RESPONSE_IS_UNKNOWN             10
-#define RESPONSE_SUCCESS  			    11
-#define RESPONSE_FAIL          			12
+#define RESPONSE_SUCCESS                11
+#define RESPONSE_FAIL                   12
 
 //Define the allowed regions - these set the internal freq of the module
 #define REGION_INDIA        0x04
