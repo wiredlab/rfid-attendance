@@ -269,7 +269,7 @@ uint8_t RFID::readTagEPC(uint8_t *epc, uint8_t &epcLength, uint16_t timeOut)
 
 //This writes a new EPC to the first tag it detects
 //Use with caution. This function doesn't control which tag hears the command.
-uint8_t RFID::writeTagEPC(char *newID, uint8_t newIDLength, uint16_t timeOut)
+uint8_t RFID::writeTagEPC(uint8_t *newID, uint8_t newIDLength, uint16_t timeOut)
 {
   uint8_t bank = 0x01; //EPC memory
   uint8_t address = 0x02; //EPC starts at spot 4
