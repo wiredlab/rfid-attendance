@@ -1,0 +1,7 @@
+
+2017-10-22 16:46:58
+----------------------------------------
+powering the RFID reader:
+* clip 5V pin from ESP to RFID reader on shield.
+* jumper the 5V pin on the ESP shield to the external power input (+) on the reader
+
