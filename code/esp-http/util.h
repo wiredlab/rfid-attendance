@@ -32,15 +32,16 @@ void blink(int ontime, int offtime, int repeat) {
 }                                                                               
 
 
-/*                                                                              
- * Indicate a status with an LED                                                
- */                                                                             
+/*
+ * Make the blinkiness to have well-defined meanings.
+ * Then use status() to easily blink something the user
+ * understands.
+ */
 enum status_t {                                                                 
   WAITING,                                                                      
   GOOD,                                                                         
   ERROR,                                                                        
 };  
-
 
 void status(status_t s) {                                                       
   switch (s) {                                                                  
@@ -56,4 +57,45 @@ void status(status_t s) {
       break;                                                                    
   }                                                                             
 }                                                                               
+
+
+
+
+/*
+ *
+ * Functions for RFID reader
+ *
+ */
+
+// Gracefully handles a reader that is already configured and already reading
+// continuously Because Stream does not have a .begin() we have to do this
+// outside the library
+boolean setupNano(RFID &nano, Stream &uart)
+{
+  nano.begin(uart); //Tell the library to communicate over software serial port
+
+  //About 200ms from power on the module will send its firmware version at 115200. We need to ignore this.
+  while(uart.available()) uart.read();
+
+  nano.getVersion();
+  
+  if (nano.msg[0] == ERROR_WRONG_OPCODE_RESPONSE) {
+    //This happens if the baud rate is correct but the module is doing a ccontinuous read
+    nano.stopReading();
+    Serial.println(F("Module continuously reading. Asking it to stop..."));
+    delay(1500);
+  }
+
+  //Test the connection
+  nano.getVersion();
+  Serial.print("connection test response: ");
+  Serial.println(nano.msg[0], HEX);
+  //if (nano.msg[0] != ALL_GOOD) return (false); //Something is not right
+
+  //The M6E has these settings no matter what
+  nano.setTagProtocol(); //Set protocol to GEN2
+  nano.setAntennaPort(); //Set TX/RX antenna ports to 1
+
+  return (true); //We are ready to rock
+}
 
