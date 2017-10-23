@@ -11,25 +11,26 @@
  */
 void board_init() {
   pinMode(ESP8266_LED, OUTPUT);
+  digitalWrite(ESP8266_LED, HIGH);
 }
 
 
-/*                                                                              
- * Convenience function to flash a pattern                                      
- * On for ontime ms,                                                            
- * Off for offtime ms,                                                          
- * repeated n times.                                                            
- */                                                                             
-void blink(int ontime, int offtime, int repeat) {                               
-  int n = repeat;                                                               
-  while (n > 0) {                                                               
-    digitalWrite(ESP8266_LED, LOW);                                             
-    delay(ontime);                                                              
-    digitalWrite(ESP8266_LED, HIGH);                                            
-    delay(offtime);                                                             
-    n--;                                                                        
-  }                                                                             
-}                                                                               
+/*
+ * Convenience function to flash a pattern
+ * On for ontime ms,
+ * Off for offtime ms,
+ * repeated n times.
+ */
+void blink(int ontime, int offtime, int repeat) {
+  int n = repeat;
+  while (n > 0) {
+    digitalWrite(ESP8266_LED, LOW);
+    delay(ontime);
+    digitalWrite(ESP8266_LED, HIGH);
+    delay(offtime);
+    n--;
+  }
+}
 
 
 /*
@@ -37,26 +38,29 @@ void blink(int ontime, int offtime, int repeat) {
  * Then use status() to easily blink something the user
  * understands.
  */
-enum status_t {                                                                 
-  WAITING,                                                                      
-  GOOD,                                                                         
-  ERROR,                                                                        
-};  
+enum status_t {
+  BLIP,
+  WAITING,
+  GOOD,
+  ERROR,
+};
 
-void status(status_t s) {                                                       
-  switch (s) {                                                                  
-    case WAITING:                                                               
-      blink(500, 100, 1);                                                       
-      break;                                                                    
-    case GOOD:                                                                  
-      blink(100, 100, 2);                                                       
-      break;                                                                    
-    case ERROR:                                                                 
-      blink(100, 100, 5);                                                       
-    default:                                                                    
-      break;                                                                    
-  }                                                                             
-}                                                                               
+void status(status_t s) {
+  switch (s) {
+    case BLIP:
+      blink(20, 0, 1);
+    case WAITING:
+      blink(500, 100, 1);
+      break;
+    case GOOD:
+      blink(100, 100, 2);
+      break;
+    case ERROR:
+      blink(100, 100, 5);
+    default:
+      break;
+  }
+}
 
 
 
@@ -78,7 +82,7 @@ boolean setupNano(RFID &nano, Stream &uart)
   while(uart.available()) uart.read();
 
   nano.getVersion();
-  
+
   if (nano.msg[0] == ERROR_WRONG_OPCODE_RESPONSE) {
     //This happens if the baud rate is correct but the module is doing a ccontinuous read
     nano.stopReading();
@@ -90,11 +94,12 @@ boolean setupNano(RFID &nano, Stream &uart)
   nano.getVersion();
   Serial.print("connection test response: ");
   Serial.println(nano.msg[0], HEX);
-  //if (nano.msg[0] != ALL_GOOD) return (false); //Something is not right
+  if (nano.msg[0] != ALL_GOOD) return (false); //Something is not right
 
   //The M6E has these settings no matter what
   nano.setTagProtocol(); //Set protocol to GEN2
   nano.setAntennaPort(); //Set TX/RX antenna ports to 1
+  nano.setRegion(REGION_NORTHAMERICA); //Set to North America
 
   return (true); //We are ready to rock
 }
