@@ -70,7 +70,8 @@ void status(status_t s) {
  * Functions for RFID reader
  *
  */
-
+//only when using the library
+#ifdef TMR_SR_OPCODE_VERSION
 // Gracefully handles a reader that is already configured and already reading
 // continuously Because Stream does not have a .begin() we have to do this
 // outside the library
@@ -103,4 +104,4 @@ boolean setupNano(RFID &nano, Stream &uart)
 
   return (true); //We are ready to rock
 }
-
+#endif

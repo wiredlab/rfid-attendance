@@ -2,7 +2,6 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-#define ESP8266_LED 5
 #include "util.h"
 
 
@@ -11,6 +10,8 @@
 // Go to vu-wifi.valpo.edu and select "MAC Self Registration"
 //
 // This step should not be necessary for a GE100 student to do.
+
+// WiFi configuration
 const char ssid[] = "VU-Media";
 const char password[] = "";  // unused for unencrypted connection
 
@@ -20,7 +21,7 @@ HTTPClient http;
 
 
 void setup() {
-  pinMode(ESP8266_LED, OUTPUT);
+  board_init();  // to use the functions in util.h
 
   Serial.begin(115200);
   delay(500);
@@ -32,7 +33,7 @@ void setup() {
   WiFi.disconnect();
 
   WiFi.begin(ssid);  // for unencrypted SSID
-  // WiFi.begin(ssid, password);  // encrypted SSIDs
+  //WiFi.begin(ssid, password);  // encrypted SSIDs
 
   while (WiFi.status() != WL_CONNECTED) {
     status(WAITING);
@@ -41,6 +42,7 @@ void setup() {
   status(GOOD);
 
   Serial.println("");
+  WiFi.printDiag(Serial);
   Serial.println("WiFi connected");  
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
