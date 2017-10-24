@@ -103,9 +103,9 @@ void setup()
 
 void loop()
 {
-  Serial.println(F("Press a key to scan for a tag"));
-  while (!Serial.available()); //Wait for user to send a character
-  Serial.read(); //Throw away the user's character
+  //Serial.println(F("Press a key to scan for a tag"));
+  //while (!Serial.available()); //Wait for user to send a character
+  //Serial.read(); //Throw away the user's character
 
   byte myEPC[12]; //Most EPCs are 12 bytes
   byte myEPClength;
@@ -117,6 +117,7 @@ void loop()
 
     responseType = nano.readTagEPC(myEPC, myEPClength, 500); //Scan for a new tag up to 500ms
     Serial.println(F("Searching for tag"));
+    delay(500);
   }
 
   //Beep! Piano keys to frequencies: http://www.sengpielaudio.com/KeyboardAndFrequencies.gif
@@ -138,8 +139,26 @@ void loop()
   Serial.println(F("]"));
 
 
+  const char* host = "api.thingspeak.com";
+  const char* streamID = "8X26QMKV55Q1LTDK";
+  // Example: GET https://api.thingspeak.com/update?api_key=8X26QMKV55Q1LTDK&field1=
 
-  http.begin("http://whiteaudio.com/index.html");
+  String url = "http://";
+  url += host;
+  url += "/update?api_key=";
+  url += streamID;
+  url += "&field1=";
+  for (byte x = 0 ; x < myEPClength; x++){
+    if (myEPC[x] < 0x10){
+      url += "0";
+      //Serial.print(F("0"));
+    }
+    url += String(myEPC[x], HEX);
+  }
+
+  Serial.println(url);
+  
+  http.begin(url);
   int httpCode = http.GET();
   String response = http.getString();
   http.end();
